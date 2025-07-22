@@ -1,0 +1,38 @@
+name: rust_box ci
+run-name: Rust CI launched by @${{ github.actor }}
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+
+  check:
+    name: cargo check
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: default
+          toolchain: stable
+      - name: Check project
+        uses: actions-rs/cargo@v1 
+        with:
+          command: check
+          args: --all-targets
+      - name: clippy check
+        uses: actions-rs/clippy-check@v1
+        with:
+          args: --all-targets -- -D warnings    
+
